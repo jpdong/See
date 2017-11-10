@@ -1,13 +1,33 @@
 {
   "pages": [
-    "pages/login/login",
+    "pages/user/user",
     "pages/device/device",
-    "pages/device_detail/detail"
+    "pages/device_detail/detail",
+    "pages/scan/scan",
+    "pages/login/login"
+    
   ],
   "window": {
     "backgroundTextStyle": "black",
     "navigationBarBackgroundColor": "#fff",
     "navigationBarTitleText": "See",
     "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "backgroundColor": "#fff",
+    "list": [
+      {
+        "pagePath": "pages/device/device",
+        "text": "search"
+      },
+      {
+        "pagePath": "pages/scan/scan",
+        "text": "scan"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "text": "me"
+      }
+    ]
   }
 }

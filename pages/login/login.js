@@ -112,9 +112,10 @@ function loginEesee(account, passwordMd5) {
         duration: 1000
       })
       appInstance.globalData.sid = responseData.data.sid;
-      wx.navigateTo({
-        url: '../device/device',
-      })
+      // wx.navigateTo({
+      //   url: '../user/user',
+      // })
+      wx.navigateBack({});
     } else {
       wx.showModal({
         title: '登录失败',

@@ -36,6 +36,5 @@ App({
   globalData: {
     userInfo: { "username": "eesee", "passwordMd5":"98813dc2c0dd3681eac32819a6d730ff"},
     sid:"",
-    memoryCacheList:[]
   }
 })

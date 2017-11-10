@@ -1,52 +1,46 @@
-// pages/device_detail/detail.js
+// pages/scan/scan.js
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    item:{},
-    //detailList:[]
+  
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log("device detail page onLoad");
-    //console.log("page_detail:" + options.item);
-    this.setData({
-      item: JSON.parse(options.item),
-      //detailList:propertyList,
-    })
+  
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-    console.log("device detail page onReady");
+  
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    console.log("device detail page onShow");
+  
   },
 
   /**
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-    console.log("device detail page onHide");
+  
   },
 
   /**
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    console.log("device detail page onUnload");
+  
   },
 
   /**
@@ -69,12 +63,4 @@ Page({
   onShareAppMessage: function () {
   
   }
-});
-class Property{
-  key="";
-  value="";
-  constructor(key,value) {
-    this.key = key;
-    this.value = value;
-  }
-}
+})
