@@ -44,6 +44,16 @@ Page({
         user_name: appInstance.globalData.userInfo.username,
       })
     }
+
+    wx.getNetworkType({
+      success: function(res) {
+        console.log(res);
+      },
+    });
+    wx.onNetworkStatusChange(function(res){
+      console.log(res);
+    })
+
   },
 
   /**

@@ -1,5 +1,5 @@
 <!-- <button bindtap='btn_search'>
-  search</button> --> 
+  search</button> -->
 <view class="weui-search-bar">
   <view class="weui-search-bar__form">
     <view class="weui-search-bar__box">
@@ -15,33 +15,22 @@
     </label>
   </view>
   <view class="weui-search-bar__cancel-btn" hidden="{{!inputShowed}}" bindtap="hideInput">取消</view>
-  <view wx:if="{{!inputShowed}}"  bindtap='scan_click'>scan</view>
+  <view wx:if="{{!inputShowed}}" bindtap='scan_click'>scan</view>
 </view>
-<scroll-view>
-  <!-- <view class="weui-cells weui-cells_after-title" wx:for="{{deviceList}}">
-    <view class="weui-cell" data-item="{{item}}" bindtap='listItem_click' style='position:relative;left:10px;top:10px;bottom:10px'>
-      <view class="weui-cell__hd">
-        <image src='../../images/icon.jpeg' style="margin-right: 5px;vertical-align: middle;width:50px; height: 50px;"></image>
+<scroll-view style='width:100%;border-top:0.5px solid #C9C9C9;border-bottom:0.5px solid #C9C9C9' enable-back-to-top="true">
+  <view wx:for="{{deviceList}}" data-item="{{item}}" bindtap='listItem_click' style='position:relative;left:5%;height:70px;border-top:0.5px solid #C9C9C9;'>
+    <view style='position:relative;top:10px;'>
+      <view>
+        <image src='../../images/icon.jpeg' lazy-load='true' style='width:50px;height:50px;'></image>
       </view>
-      <view class='weui-cell__bd' style='position:absolute;left:55px;top:0px'>
-        {{item.routename}}
-      </view>
-      <view class='weui-cell__ft'style='position:absolute;left:55px;bottom:0px'>
-        {{item.mac_address}}
-      </view>
-    </view>
-  </view> -->
-  <view>
-  <view style='position:relative;left:2%;top:2%' wx:for="{{deviceList}}" data-item="{{item}}" bindtap='listItem_click'>
-    <view >
-      <image src='../../images/icon.jpeg' lazy-load='true' style='width:50px;height:50px;left:2%'></image>
-    </view>
-    <view  style='position:absolute;left:20%;top:0px'>
-      {{item.routename}}
-    </view>
-    <view style='position:absolute;left:20%;bottom:2%'>
-      {{item.mac_address}}
+      <div>
+        <view style='position:absolute;left:60px;font-size:14px;top:0px;'>
+          {{item.routename}}
+        </view>
+        <view style='position:absolute;left:60px;bottom:5px;font-size:12px;font-color:#C9C9C9'>
+          {{item.mac_address}}
+        </view>
+      </div>
     </view>
   </view>
-</view>
 </scroll-view>

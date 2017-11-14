@@ -1,66 +1,115 @@
 // pages/scan/scan.js
+var util = require("../../utils/util.js");
+var pageInstance;
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-  
+    bluetoothList: [],
+    discovering:false
   },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad: function (options) {
-  
+  btn_open_bluetooth: function () {
+    openBluetooth();
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-  
+  bluetoothdevice_click: function (event) {
+    //util.toast(JSON.stringify(event.currentTarget.dataset.bluetoothdevice));
+    stopDiscovering(this.discovering);
+    wx.navigateTo({
+      url: '../bluetooth_device/bluetoothdevice?bluetoothdevice=' + JSON.stringify(event.currentTarget.dataset.bluetoothdevice),
+    })
   },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-  
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-  
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
+  onLoad: function (options) { pageInstance = this },
+  onReady: function () { },
+  onShow: function () { },
+  onHide: function () { },
   onUnload: function () {
-  
+    stopDiscovering();
+    wx.closeBluetoothAdapter({
+      success: function (res) {
+      },
+      fail: function (res) {
+        util.toast("close bluetooth adapter fail:" + JSON.stringify(res));
+      }
+    })
   },
+  onPullDownRefresh: function () { },
+  onReachBottom: function () { },
+  onShareAppMessage: function () { }
+});
 
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-  
-  },
+function openBluetooth() {
+  wx.openBluetoothAdapter({
+    success: function (res) {
+      //util.toast("open success:" + JSON.stringify(res));
+      startScan();
+    },
+    fail: function (res) {
+      //util.toast("open fail:" + JSON.stringify(res));
+      if (res.errCode == 10001) {
+        wx.showModal({
+          title: '蓝牙未开启',
+          content: '请手动打开蓝牙',
+          showCancel: false,
+        })
+      }
+    }
+  });
+}
 
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-  
-  },
+function startScan() {
+  pageInstance.setData({
+    discovering: true
+  })
+  wx.startBluetoothDevicesDiscovery({
+    success: function (res) {
+      util.toast("scan success:" + JSON.stringify(res));
+      getDevices();
+    },
+    fail: function (res) {
+      util.toast("scan fail:" + JSON.stringify(res));
+    }
+  })
+}
 
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-  
+function getDevices() {
+  wx.getBluetoothDevices({
+    success: function (res) {
+      var eeseeDevice = [];
+      for (let i = 0; i < res.devices.length; i++) {
+        if (res.devices[i].name.indexOf("ESetup") != -1) {
+          eeseeDevice.push(res.devices[i]);
+        }
+      }
+      pageInstance.setData({
+        bluetoothList: eeseeDevice
+      })
+    },
+    fail: function (res) {
+      util.toast("get devices fail:" + JSON.stringify(res));
+    }
+  });
+  // wx.onBluetoothDeviceFound(function(res){
+  //   var eeseeDevice = [];
+  //   for (let i = 0; i < res.devices.length; i++) {
+  //     if (res.devices[i].name.indexOf("ESetup") != -1) {
+  //       eeseeDevice.push(res.devices[i]);
+  //     }
+  //   }
+  //   pageInstance.setData({
+  //     bluetoothList: eeseeDevice
+  //   })
+  // })
+
+}
+function stopDiscovering() {
+  if (pageInstance.discovering) {
+    wx.stopBluetoothDevicesDiscovery({
+      success: function (res) {
+        pageInstance.setData({
+          discovering: false,
+        })
+      },
+      fail: function (res) {
+        util.toast("stop scan fail:" + JSON.stringify(res));
+      }
+    })
   }
-})
+}

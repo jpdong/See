@@ -1,0 +1,2 @@
+/* pages/bluetooth_device/bluetoothdevice.wxss */
+@import "../variable/weui.wxss"
