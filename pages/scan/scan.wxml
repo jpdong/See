@@ -1,6 +1,9 @@
 <!--pages/scan/scan.wxml-->
-<text>pages/scan/scan.wxml</text>
-<button bindtap='btn_open_bluetooth' disabled='{{discovering}}' loading='{{discovering}}'>查找蓝牙设备</button>
+<button bindtap='btn_test'>test</button>
+ <button bindtap='btn_open' disabled='{{opened}}'>打开蓝牙</button> 
+<button bindtap='btn_discovering_bluetooth' disabled='{{!opened|discovering}}' loading='{{discovering}}'>搜索设备</button>
+<button bindtap='btn_stop' disabled='{{!opened|!discovering}}'>停止搜索</button>
+ <button bindtap='btn_close' disabled='{{discovering|!opened}}'>关闭蓝牙</button>  
 <scroll-view style='width:100%;border-top:0.5px solid #C9C9C9;border-bottom:0.5px solid #c8c7cc' enable-back-to-top="true">
   <view wx:for="{{bluetoothList}}" data-bluetoothdevice='{{item}}' bindtap='bluetoothdevice_click' style='position:relative;left:5%;height:70px;border-top:0.5px solid #C9C9C9;'>
     <view style='position:relative;top:10px;'>

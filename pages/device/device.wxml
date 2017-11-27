@@ -15,7 +15,7 @@
     </label>
   </view>
   <view class="weui-search-bar__cancel-btn" hidden="{{!inputShowed}}" bindtap="hideInput">取消</view>
-  <view wx:if="{{!inputShowed}}" bindtap='scan_click'>scan</view>
+  <view wx:if="{{!inputShowed}}" bindtap='scan_click' style='margin-left:5px;'><text class='fa fa-qrcode fa-2x' style='color:#666'></text></view>
 </view>
 <scroll-view style='width:100%;border-top:0.5px solid #C9C9C9;border-bottom:0.5px solid #C9C9C9' enable-back-to-top="true">
   <view wx:for="{{deviceList}}" data-item="{{item}}" bindtap='listItem_click' style='position:relative;left:5%;height:70px;border-top:0.5px solid #C9C9C9;'>
@@ -27,7 +27,7 @@
         <view style='position:absolute;left:60px;font-size:14px;top:0px;'>
           {{item.routename}}
         </view>
-        <view style='position:absolute;left:60px;bottom:5px;font-size:12px;font-color:#C9C9C9'>
+        <view style='position:absolute;left:60px;bottom:5px;font-size:12px;color:#666'>
           {{item.mac_address}}
         </view>
       </div>

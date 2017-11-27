@@ -12,7 +12,7 @@ Page({
     inputValue: ""
   },
   btn_request: function () {
-    console.log("sid=" + appInstance.globalData.sid);
+    console.log("sid=" + appInstance.globalData. sid);
     loginEesee();
   },
   btn_search: function () {
@@ -68,7 +68,7 @@ Page({
           success:function(event) {
             if (event.confirm) {
               pageInstance.setData({
-                inputValue:result.result.result
+                inputValue:result.result
               });
               searchKey(result.result);
             }

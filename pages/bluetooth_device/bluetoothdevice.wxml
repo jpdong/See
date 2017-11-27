@@ -13,25 +13,51 @@
 <view>{{bluetoothdevice.localName}}</view> -->
 
 <view class="weui-cells weui-cells_after-title">
-  <view class="weui-cell"><view class='weui-cell__bd'>name</view><view class='weui-cell__ft'>{{bluetoothdevice.name}}</view></view>
-  <view class="weui-cell"><view class='weui-cell__bd'>deviceId</view><view class='weui-cell__ft'>{{bluetoothdevice.deviceId}}</view></view>
-  <view class="weui-cell"><view class='weui-cell__bd'>RSSI</view><view class='weui-cell__ft'>{{bluetoothdevice.RSSI}}</view></view>
-  <view class="weui-cell"><view class='weui-cell__bd'>advertisData</view><view class='weui-cell__ft'>{{bluetoothdevice.advertisData}}</view></view>
-  <view class="weui-cell"><view class='weui-cell__bd'>advertisServiceUUIDs</view><view class='weui-cell__ft'>{{bluetoothdevice.advertisServiceUUIDs}}</view></view>
-  <view class="weui-cell"><view class='weui-cell__bd'>localName</view><view class='weui-cell__ft'>{{bluetoothdevice.localName}}</view></view>
-</view>
-
-<button bindtap='btn_connect'>连接</button>
-<view wx:for="{{serviceList}}">
-  <view style='border:0.5px solid black'><text>{{item.uuid}}</text></view>
-  <view>{{item.isPrimary}}</view>
-  <button bindtap='service_click' data-service='{{item}}'>查看characteristic</button>
-  <view wx:for="{{characteristicList}}" wx:for-item="characteristic" >
-    <view style='font-color:green'>
-      {{characteristic.uuid}}
-    </view>
-    <view style='font-color:green'>
-      read:{{characteristic.properties.read}},write:{{characteristic.properties.write}},notify:{{characteristic.properties.notify}},indicate:{{characteristic.properties.indicate}}
-    </view>
+  <view class="weui-cell">
+    <view class='weui-cell__bd'>name</view>
+    <view class='weui-cell__ft'>{{bluetoothdevice.name}}</view>
   </view>
+  <view class="weui-cell">
+    <view class='weui-cell__bd'>deviceId</view>
+    <view class='weui-cell__ft'>{{bluetoothdevice.deviceId}}</view>
+  </view>
+  <!-- <view class="weui-cell">
+    <view class='weui-cell__bd'>RSSI</view>
+    <view class='weui-cell__ft'>{{bluetoothdevice.RSSI}}</view>
+  </view>
+  <view class="weui-cell">
+    <view class='weui-cell__bd'>advertisData</view>
+    <view class='weui-cell__ft'>{{bluetoothdevice.advertisData}}</view>
+  </view>
+  <view class="weui-cell">
+    <view class='weui-cell__bd'>advertisServiceUUIDs</view>
+    <view class='weui-cell__ft'>{{bluetoothdevice.advertisServiceUUIDs}}</view>
+  </view>
+  <view class="weui-cell">
+    <view class='weui-cell__bd'>localName</view>
+    <view class='weui-cell__ft'>{{bluetoothdevice.localName}}</view>
+  </view> -->
 </view>
+<button bindtap='btn_connect' loading='{{connecting}}' disabled='{{connecting}}'>连接</button>
+<button bindtap='btn_disconnect' disabled='{{!connecting}}'>断开连接</button>
+<view>{{dataFromDevice}}</view>
+<view>{{dataFromBarcode}}</view>
+<view bindtap='scan_click' style='margin-left:5px;'><text class='fa fa-qrcode fa-2x' style='color:#666'></text></view>
+<!-- <view wx:for="{{serviceList}}">
+  <view style='border:0.5px solid black'>
+    <text>{{item.uuid}}</text>
+  </view>
+  <view>{{item.isPrimary}}</view>
+</view>
+<button bindtap='service_click' data-service='{{item}}'>查看characteristic</button>
+<view wx:for="{{characteristicList}}" wx:for-item="characteristic">
+  <view style='font-color:green'>
+    {{characteristic.uuid}}
+  </view>
+  <view style='font-color:green'>
+    read:{{characteristic.properties.read}},write:{{characteristic.properties.write}},notify:{{characteristic.properties.notify}},indicate:{{characteristic.properties.indicate}}
+  </view>
+</view> 
+<button bindtap='btn_read'>read1</button>
+<button bindtap="btn_write2">write2</button>
+<button bindtap='btn_write3'>write3</button> -->

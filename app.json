@@ -18,15 +18,21 @@
     "list": [
       {
         "pagePath": "pages/device/device",
-        "text": "search"
+        "iconPath": "images/search.png",
+        "selectedIconPath": "images/search_selected.png",
+        "text": "搜索"
       },
       {
         "pagePath": "pages/scan/scan",
-        "text": "scan"
+        "iconPath": "images/bluetooth.png",
+        "selectedIconPath": "images/bluetooth_selected.png",
+        "text": "扫描"
       },
       {
         "pagePath": "pages/user/user",
-        "text": "me"
+        "iconPath":"images/me.png",
+        "selectedIconPath":"images/me_selected.png",
+        "text":"我"
       }
     ]
   }

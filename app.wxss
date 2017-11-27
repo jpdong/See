@@ -1,4 +1,5 @@
 /**app.wxss**/
+@import "pages/variable/fa.wxss";
 .container {
   height: 100%;
   display: flex;
