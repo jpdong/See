@@ -15,6 +15,14 @@ const formatNumber = n => {
 }
 
 function toast(message) {
+  wx.showToast({
+    title: message,
+    image:"../../images/image_wtf.png",
+    duration:3000
+  })
+}
+
+function dialog(message) {
   wx.showModal({
     title: 'log',
     content: '' + message,
@@ -23,5 +31,6 @@ function toast(message) {
 
 module.exports = {
   formatTime: formatTime,
-  toast:toast
+  toast:toast,
+  dialog:dialog
 }

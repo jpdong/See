@@ -32,8 +32,9 @@ class Request {
     return this;
   }
 
-  buildUrl() {
-    var timestamp = new Date().getTime();
+  buildUrlWithSid() {
+    var time = new Date().getTime();
+    var timestamp = time.toString().substring(0, time.toString().length - 3);
     var signTemp = "eeseeTech"
       + "data" + this.data
       + "service" + this.service
@@ -47,6 +48,23 @@ class Request {
       + "&data=" + this.data
       + "&sign=" + sign
       + "&sid=" + appInstance.globalData.sid;
+  }
+
+  buildUrlWithoutSid() {
+    var time = new Date().getTime();
+    var timestamp = time.toString().substring(0,time.toString().length - 3);
+    console.log("timestamp:" + timestamp);
+    var signTemp = "eeseeTech"
+      + "data" + this.data
+      + "service" + this.service
+      + "t" + timestamp
+      + "v" + this.version;
+    var sign = this.getSign(signTemp);
+    return this.baseUrl + this.site + "/index.php?service=" + this.service
+      + "&v=" + this.version
+      + "&t=" + timestamp
+      + "&data=" + this.data
+      + "&sign=" + sign;
   }
 
   getSign(signTemp) {

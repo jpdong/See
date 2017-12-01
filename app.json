@@ -1,11 +1,13 @@
 {
   "pages": [
+    
     "pages/scan/scan",
     "pages/user/user",
     "pages/device/device",
     "pages/device_detail/detail",
     "pages/login/login",
     "pages/bluetooth_device/bluetoothdevice"
+    
   ],
   "window": {
     "backgroundTextStyle": "black",

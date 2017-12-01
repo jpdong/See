@@ -26,7 +26,20 @@
 		},
 		"miniprogram": {
 			"current": -1,
-			"list": []
+			"list": [
+				{
+					"id": -1,
+					"name": "1",
+					"pathName": "pages/bluetooth_device/bluetoothdevice",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "2",
+					"pathName": "pages/bluetooth_device/bluetoothdevice",
+					"query": ""
+				}
+			]
 		}
 	}
 }

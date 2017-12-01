@@ -9,6 +9,7 @@ class HttpClient {
     wx.request({
       //url: "http://gank.io/api/data/福利/5/1",
       url:urlString,
+      method:"GET",
       success:function(response) {
         console.log(response);
         if (response.statusCode == 200) {

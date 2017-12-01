@@ -132,7 +132,7 @@ function loginEesee() {
     .setData("{\"username\":\"eesee\",\"password\":\"98813dc2c0dd3681eac32819a6d730ff\",\"production\":\"router\"}")
     .setService("User.Login")
     .setSite("eesee");
-  var url = urlBuilder.buildUrl();
+  var url = urlBuilder.buildUrlWithSid();
   console.log(url);
   httpclient.request(url, function success(responseData) {
     if (responseData.data.sid != null) {

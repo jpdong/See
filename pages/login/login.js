@@ -102,7 +102,7 @@ function loginEesee(account, passwordMd5) {
     //.setData("{\"username\":\"" + account + "\",\"password\":\"" + passwordMd5 + "\",\"production\":\"router\"}")
     .setService("User.Login")
     .setSite("eesee");
-  var url = urlBuilder.buildUrl();
+  var url = urlBuilder.buildUrlWithSid();
   console.log(url);
   httpclient.request(url, function success(responseData) {
     if (responseData.code == 0) {

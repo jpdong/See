@@ -1,5 +1,10 @@
 // pages/bluetooth_device/bluetoothdevice.js
 var util = require("../../utils/util.js");
+var CryptoJS = require("../../utils/crypto-js.js");
+var HttpClient = require("../http/httpclient.js");
+var Request = require("../http/request.js");
+var httpclient;
+var key = "e$Tech1";
 var mBluetoothdevice;
 var pageInstance;
 Page({
@@ -10,10 +15,18 @@ Page({
     connecting: false,
     dataFromBarcode: "",
     dataFromDevice: "",
-    underSetting:false
+    underSetting: false,
+    name: "",
+    phone: "",
+    address: "",
+    longitude:"",
+    latitude:""
   },
   btn_connect: function () {
     if (!this.data.connecting) {
+      wx.showLoading({
+        title: '操作中',
+      })
       wx.createBLEConnection({
         deviceId: mBluetoothdevice.deviceId,
         success: function (res) {
@@ -24,6 +37,7 @@ Page({
           getDeviceServices(mBluetoothdevice.deviceId);
         },
         fail: function (res) {
+          wx.hideLoading();
           util.toast("connect fail:" + JSON.stringify(res));
         }
       })
@@ -31,50 +45,72 @@ Page({
       console.log("connect already connecting");
     }
   },
-  service_click: function (event) {
-    //util.toast("service:");
-    //util.toast("service:" + JSON.stringify(event.currentTarget.dataset.service));
-    getCharacteristics(event.currentTarget.dataset.service.uuid);
-  },
-  btn_read: function (event) {
-    readDataFromC1();
-  },
-  btn_write2: function (event) {
-    writeDataToC2(data);
-  },
-  btn_write3: function () {
-    writeDataToC3(1);
-  },
   btn_disconnect: function (event) {
     disconnectBLE();
   },
   scan_click: function (event) {
-    wx.scanCode({
-      success: function (result) {
-        console.log(result);
-        wx.showModal({
-          title: result.scanType,
-          content: result.result,
-          success: function (event) {
-            if (event.confirm) {
-              pageInstance.setData({
-                dataFromBarcode: result.result
-              });
+    scanSN();
+  },
+  btn_test: function () {
+
+  },
+  input_name: function (event) {
+    console.log("name:" + event.detail.value);
+    pageInstance.data.name = event.detail.value;
+  },
+  input_phone: function (event) {
+    console.log("phone:" + event.detail.value);
+    pageInstance.data.phone = event.detail.value;
+  },
+  input_address: function (event) {
+    console.log("address:" + event.detail.value);
+    pageInstance.data.address = event.detail.value;
+  },
+  btn_submit: function () {
+    console.log("submit click");
+    if (checkInput()) {
+      wx.getLocation({
+        type: 'wgs84',
+        success: function (res) {
+          pageInstance.data.latitude = res.latitude;
+          pageInstance.data.longitude = res.longitude;
+          wx.showLoading({
+            title: '操作中',
+          })
+          registerDevice();
+        },
+        fail: function (res) {
+          //util.toast(JSON.stringify(res));
+          wx.showModal({
+            title: '权限限制',
+            content: '请允许小程序获得地理位置信息',
+            confirmText:"设置",
+            success:function(res) {
+              if (res.confirm) {
+                wx.openSetting({
+                  
+                })
+              }
+            },
+            fail:function(res) {
+              console.log(JSON.stringify(res));
             }
-          }
-        })
-      }, fail: function (error) {
-        console.log(error);
-        wx.showModal({
-          title: "fail",
-          content: error.errMsg,
-          showCancel: false
-        })
-      }
-    })
+            
+          })
+        }
+      })
+    } else {
+      wx.showModal({
+        title: '失败',
+        content: '缺少信息',
+        showCancel:false
+      })
+    }
+    
   },
   onLoad: function (options) {
     pageInstance = this;
+    httpclient = new HttpClient.HttpClient();
     mBluetoothdevice = JSON.parse(options.bluetoothdevice);
     this.setData({
       bluetoothdevice: JSON.parse(options.bluetoothdevice)
@@ -83,15 +119,39 @@ Page({
   onReady: function () { },
   onShow: function () { },
   onHide: function () {
-    disconnectBLE();
+    console.log("bluetoothdevice onHide");
+    //disconnectBLE();
   },
   onUnload: function () {
+    console.log("bluetoothdevice onUnload");
     disconnectBLE();
   },
   onPullDownRefresh: function () { },
   onReachBottom: function () { },
   onShareAppMessage: function () { }
 });
+
+function scanSN() {
+  wx.scanCode({
+    success: function (result) {
+      console.log(result);
+      wx.showModal({
+        title: result.scanType,
+        content: result.result,
+        success: function (event) {
+          if (event.confirm) {
+            pageInstance.setData({
+              dataFromBarcode: result.result
+            });
+          }
+        }
+      })
+    }, fail: function (error) {
+      console.log(JSON.stringify(error));
+      util.toast(JSON.stringify(error));
+    }
+  })
+}
 
 function getDeviceServices(deviceId) {
   //util.toast("getDevice:" + deviceId);
@@ -105,6 +165,7 @@ function getDeviceServices(deviceId) {
       })
     },
     fail: function (res) {
+      wx.hideLoading();
       util.toast("get service fail:" + JSON.stringify(res));
     }
   })
@@ -116,12 +177,13 @@ function getCharacteristics(serviceId) {
     serviceId: serviceId,
     success: function (res) {
       console.log("getCharacteristics:" + JSON.stringify(res.characteristics));
-      writeDataToC3(1);
+      writeDataToC3("1");
       pageInstance.setData({
         characteristicList: res.characteristics
       })
     },
     fail: function (res) {
+      wx.hideLoading();
       util.toast("get characteristic fail:" + JSON.stringify(res));
     }
   })
@@ -129,10 +191,13 @@ function getCharacteristics(serviceId) {
 
 function disconnectBLE() {
   console.log("disconnect BLE:underSetting = " + pageInstance.data.underSetting);
-  console.log("disconnect BLE:mUnderSetting = " + mUnderSetting);
-  if (mUnderSetting) {
-    writeDataToC3(3);
+  if (pageInstance.data.underSetting) {
+    writeDataToC3("3");
     pageInstance.data.underSetting = false;
+    pageInstance.setData({
+      connecting: false,
+      underSetting: false
+    })
     return;
   }
   if (pageInstance.data.connecting) {
@@ -151,33 +216,46 @@ function disconnectBLE() {
   }
 }
 
-function writeDataToC3(data) {
-  let buffer = new ArrayBuffer(1)
-  let intArray = new Uint8Array(buffer);
-  intArray[0] = data;
+function writeDataToC3(str) {
+  var data = encryptData(str);
+  console.log("after encrypt:" + data);
+  var arrayBuffer = new ArrayBuffer(data.length / 2);
+  var intArray = new Uint8Array(arrayBuffer);
+  for (let i = 0; i < data.length / 2; i++) {
+    intArray[i] = parseInt(data.substring(2 * i, 2 * i + 2), 16);
+  }
+  // let buffer = new ArrayBuffer(1)
+  // let intArray = new Uint8Array(buffer);
+  // intArray[0] = data;
   wx.writeBLECharacteristicValue({
     deviceId: mBluetoothdevice.deviceId,
     serviceId: "0000EE00-0000-1000-8000-00805F9B34FB",
     characteristicId: '0000EE03-0000-1000-8000-00805F9B34FB',
-    value: buffer,
+    value: arrayBuffer,
     success: function (res) {
       console.log("write to 3 success");
-      if (data == 1) {
-        pageInstance.data.underSetting = true;
+      if (str == "1") {
+        //pageInstance.data.underSetting = true;
+        pageInstance.setData({
+          underSetting: true
+        })
         readDataFromC1();
-      } else if (data == 2) {
-      
+      } else if (str == "2") {
+
       }
     },
     fail: function (res) {
+      wx.hideLoading();
       console.log("write to 3 fail:" + JSON.stringify(res));
     }
   })
 }
 
-function writeDataToC2(data) {
+function writeDataToC2(str) {
   //let someString = "fffe1234abcdabcdabcdabcd1234567812345678";
   //let s2 = "1234";
+  var data = encryptData(str);
+  console.log("after encrypt:" + data);
   var arrayBuffer = new ArrayBuffer(data.length / 2);
   var intArray = new Uint8Array(arrayBuffer);
   for (let i = 0; i < data.length / 2; i++) {
@@ -191,6 +269,7 @@ function writeDataToC2(data) {
     value: arrayBuffer,
     success: function (res) {
       console.log('write to C2 success', res.errMsg);
+      writeDataToC3("2");
     },
     fail: function (res) {
       console.log("write to C2 fail:" + JSON.stringify(res));
@@ -206,11 +285,20 @@ function readDataFromC1() {
     console.log(intArray.toString(16));
     var s = "";
     for (let i = 0; i < intArray.length; i++) {
-      s = s.concat(intArray[i].toString(16));
+      var chars = intArray[i].toString(16);
+      if (chars.length < 2) {
+        s = s.concat("0");
+        s = s.concat(chars);
+      } else {
+        s = s.concat(chars);
+      }
     }
     console.log(s);
+    var mac = decryptData(s);
+    console.log("mac:" + mac);
+    wx.hideLoading();
     pageInstance.setData({
-      dataFromDevice:s
+      dataFromDevice: mac
     })
   })
   wx.readBLECharacteristicValue({
@@ -222,20 +310,113 @@ function readDataFromC1() {
     },
     fail: function (res) {
       util.toast("read value fail:" + JSON.stringify(res));
+      wx.hideLoading();
     }
   })
 }
 
-function ab2str(buf) {
-  return String.fromCharCode.apply(null, new Uint16Array(buf));
+function decryptData(data) {
+  console.log("decryptData:" + data);
+  var encryptedHexStr = CryptoJS.enc.Hex.parse(data);
+  var encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+  var decrypted = CryptoJS.DES.decrypt(encryptedBase64Str, CryptoJS.enc.Utf8.parse(key), {
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.NoPadding
+  });
+  console.log(decrypted.toString());
+  console.log(CryptoJS.enc.Utf8.stringify(decrypted));
+  var result = CryptoJS.enc.Utf8.stringify(decrypted);
+  return result.substring(2, parseInt(result.substring(0, 2), 16) + 2);
 }
 
-function str2ab(str) {
-  console.log("str2ab:" + str.length);
-  var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-  var bufView = new Uint16Array(buf);
-  for (var i = 0, strLen = str.length; i < strLen; i++) {
-    bufView[i] = str.charCodeAt(i);
+function encryptData(data) {
+  var length = data.length;
+  var s = "";
+  var charNum = length.toString(16);
+  if (charNum.length < 2) {
+    s = s.concat("0");
+    s = s.concat(charNum);
+  } else {
+    s = s.concat(length.toString(16));
   }
-  return buf;
+  s = s.concat(data);
+  for (let i = 0; i < s.length > 16 ? (32 - s.length):(16 - s.length); i++) {
+    s = s.concat("0");
+  }
+  console.log("before encrypt:" + s);
+  var encrypted = CryptoJS.DES.encrypt(s, CryptoJS.enc.Utf8.parse(key), {
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.NoPadding
+  });
+  console.log(encrypted.ciphertext.toString());
+  return encrypted.ciphertext.toString();
+}
+
+function registerDevice() {
+  var pageData = pageInstance.data;
+  var urlBuilder = new Request.Request()
+    .setBaseUrl("https://api.eeseetech.com/")
+    .setData(JSON.stringify(new RegisterData(pageData.dataFromDevice, pageData.dataFromBarcode, pageData.name, pageData.address,pageData.phone, pageData.longitude,pageData.latitude)))
+    //.setData(JSON.stringify(new RegisterData("111111111111", "0220171100001", "dong", "上海","123456123456", "120","31")))
+    .setService("Bluetooth.proregister")
+    .setSite("router");
+  var url = urlBuilder.buildUrlWithoutSid();
+  console.log(url);
+  httpclient.request(url, function success(responseData) {
+    if (responseData.code == 0) {
+      writeDataToC2(pageInstance.data.dataFromBarcode);
+      wx.hideLoading();
+      wx.showToast({
+        title: '注册成功',
+        icon: "success",
+        duration: 1000
+      })
+    } else {
+      wx.hideLoading();
+      wx.showModal({
+        title: '注册失败',
+        content: responseData.msg,
+        showCancel: false,
+      });
+    }
+  }, function fail(error) {
+    console.log(error);
+    wx.showModal({
+      title: '注册失败',
+      content: error,
+      showCancel: false,
+    });
+  });
+}
+
+function checkInput() {
+  if (equalWithNull(pageInstance.data.dataFromDevice) || equalWithNull(pageInstance.data.dataFromBarcode) || equalWithNull(pageInstance.data.name) || equalWithNull(pageInstance.data.phone) || equalWithNull(pageInstance.data.address)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function equalWithNull(data) {
+  return data=="";
+}
+
+class RegisterData {
+  mac_address="";
+  sn="";
+  username="";
+  address="";
+  phone="";
+  longitude="";
+  latitude=""
+
+  constructor(mac,sn, name,address, phone,longitude, latitude) {
+    this.mac_address = mac;
+    this.sn = sn;
+    this.username = name;
+    this.address = address;
+    this.phone = phone;
+    this.longitude = longitude;
+    this.latitude = latitude;
+  }
 }

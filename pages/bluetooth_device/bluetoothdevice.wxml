@@ -1,48 +1,115 @@
 <!--pages/bluetooth_device/bluetoothdevice.wxml-->
-<!-- <view>name:</view>
-<view>{{bluetoothdevice.name}}</view>
-<view>deviceId:</view>
-<view>{{bluetoothdevice.deviceId}}</view>
-<view>RSSI:</view>
-<view>{{bluetoothdevice.RSSI}}</view>
-<view>advertisData:</view>
-<view>{{bluetoothdevice.advertisData}}</view>
-<view>advertisServiceUUIDs:</view>
-<view>{{bluetoothdevice.advertisServiceUUIDs}}</view>
-<view>localName:</view>
-<view>{{bluetoothdevice.localName}}</view> -->
-
-<view class="weui-cells weui-cells_after-title">
-  <view class="weui-cell">
-    <view class='weui-cell__bd'>name</view>
-    <view class='weui-cell__ft'>{{bluetoothdevice.name}}</view>
-  </view>
-  <view class="weui-cell">
-    <view class='weui-cell__bd'>deviceId</view>
-    <view class='weui-cell__ft'>{{bluetoothdevice.deviceId}}</view>
-  </view>
-  <!-- <view class="weui-cell">
-    <view class='weui-cell__bd'>RSSI</view>
-    <view class='weui-cell__ft'>{{bluetoothdevice.RSSI}}</view>
-  </view>
-  <view class="weui-cell">
-    <view class='weui-cell__bd'>advertisData</view>
-    <view class='weui-cell__ft'>{{bluetoothdevice.advertisData}}</view>
-  </view>
-  <view class="weui-cell">
-    <view class='weui-cell__bd'>advertisServiceUUIDs</view>
-    <view class='weui-cell__ft'>{{bluetoothdevice.advertisServiceUUIDs}}</view>
-  </view>
-  <view class="weui-cell">
-    <view class='weui-cell__bd'>localName</view>
-    <view class='weui-cell__ft'>{{bluetoothdevice.localName}}</view>
+<view>
+  <!-- <view style='position:relative;height:50px;border:1px solid #003300'>
+    <view style='position:relative;top:10px;width:95%;left:10px;border:1px solid #003300'>
+      <view style='position:absolute;margin-left:0px;width:96px;border:1px solid #003300'>
+        <view>设备名称:</view>
+      </view>
+      <view style='position:absolute;margin-left:96px;border:1px solid #003300'>
+        <view>{{bluetoothdevice.name}}</view>
+      </view>
+    </view>
   </view> -->
+  <view style='position:relative;height:50px;'>
+    <view style='position:relative;top:10px;left:10px;width:95%'>
+      <view style='position:absolute;margin-left:0px;width:96px'>
+        <view>设备名称:</view>
+      </view>
+      <view style='position:absolute;margin-left:96px'>
+        <view>{{bluetoothdevice.name}}</view>
+      </view>
+    </view>
+  </view>
+  <view style='position:relative;height:64px;'>
+    <view style='position:relative;top:10px;left:10px;width:95%'>
+      <view style='position:absolute;margin-left:0px;width:96px'>
+        <view>设备ID:</view>
+      </view>
+      <view style='position:absolute;margin-left:96px'>
+        <view>{{bluetoothdevice.deviceId}}</view>
+      </view>
+    </view>
+  </view>
+  <view style='position:relative;height:64px;border-top:0.5px solid #C9C9C9'>
+    <view style='position:relative;top:10px;left:10px;;width:95%'>
+      <view style='position:absolute;top:10px;width:96px'>
+        <view>MAC:</view>
+      </view>
+      <view style='position:absolute;width:100px;top:10px;margin-left:96px'>
+        <view>{{dataFromDevice}}</view>
+      </view>
+      <view style='position:absolute;right:20px'>
+        <view bindtap='btn_connect'>
+          <text class='fa fa-lightbulb-o fa-3x' style="{{underSetting?'color:#04be02':'color:#666'}}"></text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view style='position:relative;height:64px;'>
+    <view style='position:relative;top:10px;left:10px;width:95%'>
+      <view style='position:absolute;top:10px;width:96px'>
+        <view>SN:</view>
+      </view>
+      <view style='position:absolute;width:100px;top:10px;margin-left:96px'>
+        <view>{{dataFromBarcode}}</view>
+      </view>
+      <view style='position:absolute;right:10px'>
+        <view bindtap='scan_click'>
+          <text class='fa fa-barcode fa-3x' style='color:#666'></text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view style='position:relative;height:50px;'>
+    <view style='position:relative;top:10px;left:10px;width:95%'>
+      <view style='position:absolute;margin-left:0px;width:96px'>
+        <view>负责人:</view>
+      </view>
+      <view style='position:absolute;margin-left:96px'>
+        <input bindblur="input_name" maxlength="10" placeholder="输入姓名" />
+      </view>
+    </view>
+  </view>
+
+  <view style='position:relative;height:50px;'>
+    <view style='position:relative;top:10px;left:10px;width:95%'>
+      <view style='position:absolute;margin-left:0px;width:96px'>
+        <view>手机号:</view>
+      </view>
+      <view style='position:absolute;margin-left:96px'>
+        <input bindblur="input_phone" type="digit" maxlength="11" placeholder="输入手机号" />
+      </view>
+    </view>
+  </view>
+
+  <view style='position:relative;height:50px;'>
+    <view style='position:relative;top:10px;left:10px;width:95%'>
+      <view style='position:absolute;top:0px;width:20%px'>
+        <view>地址:</view>
+      </view>
+      <view style='position:absolute;width:80%;margin-left:64px;'>
+        <!-- <view>441236344121341</view> -->
+        <input bindblur="input_address" maxlength="21" placeholder="输入地址" />
+      </view>
+    </view>
+  </view>
+  <button bindtap="btn_submit" class="weui-btn" type="primary">提交</button>
+  <button bindtap='btn_disconnect' disabled='{{!connecting}}'>断开连接</button>
 </view>
-<button bindtap='btn_connect' loading='{{connecting}}' disabled='{{connecting}}'>连接</button>
+
+<!-- <button bindtap='btn_connect' loading='{{connecting}}' disabled='{{connecting}}'>连接</button>
 <button bindtap='btn_disconnect' disabled='{{!connecting}}'>断开连接</button>
 <view>{{dataFromDevice}}</view>
 <view>{{dataFromBarcode}}</view>
-<view bindtap='scan_click' style='margin-left:5px;'><text class='fa fa-qrcode fa-2x' style='color:#666'></text></view>
+<view bindtap='scan_click' style='margin-left:5px;'>
+  <text class='fa fa-qrcode fa-2x' style='color:#666'></text>
+</view>
+<button bindtap='btn_register'>注册</button>
+<button bindtap='btn_test'>test</button> -->
+
+
 <!-- <view wx:for="{{serviceList}}">
   <view style='border:0.5px solid black'>
     <text>{{item.uuid}}</text>

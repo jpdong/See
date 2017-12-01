@@ -1,1 +1,2 @@
 /* pages/scan/scan.wxss */
+@import "../variable/weui.wxss"

@@ -1,11 +1,13 @@
 // pages/scan/scan.js
 var util = require("../../utils/util.js");
+var CryptoJS = require("../../utils/crypto-js.js");
+var scheduleTask;
 var pageInstance;
 Page({
   data: {
     bluetoothList: [],
     discovering: false,
-    opened: false
+    opened: false,
   },
   btn_open: function (event) {
     openBluetooth();
@@ -29,33 +31,33 @@ Page({
       closeBluetooth();
     }
   },
-  btn_test:function(){
-    var s = "fe";
-    var arrayBuffer = new ArrayBuffer(20);
-    //var dataView = new DataView(arrayBuffer);
-    var x2 = new Uint8Array(arrayBuffer);
-    x2[0] = 0xff;
-    x2[1] = 0xfe;
-    console.log(x2[0]);
-    console.log(x2[0].toString(16));
-    console.log(parseInt(s,16));
-    console.log(x2.toString(16));
-    let someString = "fffe1234abcdabcdabcdabcd1234567812345678";
-    var arrayBuffer = new ArrayBuffer(20);
-    var intArray = new Uint8Array(arrayBuffer);
-    for (let i = 0; i < someString.length / 2; i++) {
-      intArray[i] = parseInt(someString.substring(2 * i, 2 * i + 2), 16);
-    }
-    console.log(intArray);
-    //console.log(parseInt(someString, 16));
-    console.log(arrayBuffer);
+  btn_test: function () {
+    // scheduleTask = setInterval(function() {
+    //   console.log("run");
+    // },5000)
+    wx.openSetting({
+      success:function(res){
+        console.log(JSON.stringify(res));
+      },
+      fail:function(res) {
+        console.log(JSON.stringify(res));
+      }
+    })
   },
   onLoad: function (options) {
     pageInstance = this;
   },
   onReady: function () { },
-  onShow: function () { },
-  onHide: function () { },
+  onShow: function () { 
+    console.log("onShow");
+    checkBluetoothState();
+    scheduleTask = setInterval(checkBluetoothState,10000);
+  },
+  onHide: function () {
+    console.log("onHide");
+    stopDiscovering();
+    clearInterval(scheduleTask);
+   },
   onUnload: function () {
     //stopDiscovering();
     closeBluetooth();
@@ -69,18 +71,21 @@ Page({
 function openBluetooth() {
   wx.openBluetoothAdapter({
     success: function (res) {
-      util.toast("open success:" + JSON.stringify(res));
+      //util.toast("open success:" + JSON.stringify(res));
+      console.log("open success:" + JSON.stringify(res));
+      startScan();
       pageInstance.setData({
         opened: true
       })
     },
     fail: function (res) {
       //util.toast("open fail:" + JSON.stringify(res));
+      console.log("open fail:" + JSON.stringify(res));
       if (res.errCode == 10001) {
-        wx.showModal({
+        wx.showToast({
           title: '蓝牙未开启',
-          content: '请手动打开蓝牙',
-          showCancel: false,
+          image:"../../images/image_no_bluetooth.png",
+          duration:5000
         })
       }
     }
@@ -94,7 +99,8 @@ function startScan() {
   })
   wx.startBluetoothDevicesDiscovery({
     success: function (res) {
-      util.toast("scan success:" + JSON.stringify(res));
+      //util.toast("scan success:" + JSON.stringify(res));
+      console.log("scan success:" + JSON.stringify(res));
       getDevices();
     },
     fail: function (res) {
@@ -109,7 +115,7 @@ function getDevices() {
       console.log("get devices:" + JSON.stringify(res));
       var eeseeDevice = [];
       for (let i = 0; i < res.devices.length; i++) {
-        if (res.devices[i].name != "") {
+        if (res.devices[i].name == "ESetup") {
           eeseeDevice.push(res.devices[i]);
         }
       }
@@ -123,7 +129,7 @@ function getDevices() {
   });
   wx.onBluetoothDeviceFound(function (res) {
     console.log("on found:" + JSON.stringify(res));
-    if (res.devices[0].name == "") {
+    if (res.devices[0].name != "ESetup") {
       return;
     }
     var eeseeDevice = pageInstance.data.bluetoothList;
@@ -136,6 +142,7 @@ function getDevices() {
   })
 
 }
+
 function stopDiscovering(discovering) {
   console.log("stop scan:" + pageInstance.data.discovering);
   if (pageInstance.data.discovering) {
@@ -158,11 +165,11 @@ function closeBluetooth() {
     wx.closeBluetoothAdapter({
       success: function (res) {
         pageInstance.setData({
-          opened:false
+          opened: false
         });
         console.log("close bluetooth success");
       },
-      fail:function(res) {
+      fail: function (res) {
         console.log("close bluetooth fail:" + JSON.stringify(res));
       }
     })
@@ -170,25 +177,59 @@ function closeBluetooth() {
 }
 
 function checkBluetoothState() {
+  console.log("checkBlurtoothState")
   wx.getBluetoothAdapterState({
-    success: function(res) {
-      console.log("check bluetooth state:discovering:" + res.discovering,"available:" + res.available);
-      if (!res.available) {
-        wx.showModal({
-          title: '蓝牙未开启',
-          content: '请手动打开蓝牙',
-          showCancel:false
-        })
+    success: function (res) {
+      console.log("check bluetooth state:discovering:" + res.discovering, "available:" + res.available);
+      if (res.available) {
+        if (!pageInstance.data.discovering) {
+          startScan();
+        }
       } else {
-        pageInstance.data.opened = true;
-        pageInstance.setData({
-          discovering:res.discovering,
-        })
+        openBluetooth();
       }
+      // if (!res.available) {
+      //   wx.showModal({
+      //     title: '蓝牙未开启',
+      //     content: '请手动打开蓝牙',
+      //     showCancel: false
+      //   })
+      // } else {
+      //   pageInstance.data.opened = true;
+      //   pageInstance.setData({
+      //     discovering: res.discovering,
+      //   })
+      // }
 
     },
-    fail:function (res) {
-      console.log("check bluetooth state:" + res);
+    fail: function (res) {
+      console.log("check bluetooth state fail:" + JSON.stringify(res));
+      openBluetooth();
     }
   })
+}
+
+function testAES() {
+  var str = "0630AEA445C76800";
+  //var key = "e$Tech1";
+  var key = "e$Tech1";
+  //var iv = CryptoJS.enc.Utf8.parse("12345678123456781234567812345678")
+  var encrypted = CryptoJS.DES.encrypt(str, CryptoJS.enc.Utf8.parse(key), {
+    //iv:iv,
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.NoPadding
+  });
+  console.log(encrypted.toString());
+  console.log(encrypted.ciphertext.toString());
+  var encryptedHexStr = CryptoJS.enc.Hex.parse("877cD140B04A5CBB8C5E1D4B8E0D88FA");
+  //var encryptedHexStr = CryptoJS.enc.Hex.parse(encrypted.ciphertext.toString());
+  var encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+  var decrypted = CryptoJS.DES.decrypt(encryptedBase64Str, CryptoJS.enc.Utf8.parse(key), {
+    //var decrypted = CryptoJS.DES.decrypt("f560b1b38a8baoa6a05cc7abe2b2e459", "e$Tech1", {
+    //iv:iv,
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.NoPadding
+  });
+  console.log(decrypted.toString());
+  console.log(CryptoJS.enc.Utf8.stringify(decrypted));
 }

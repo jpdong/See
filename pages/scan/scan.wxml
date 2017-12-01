@@ -1,14 +1,20 @@
 <!--pages/scan/scan.wxml-->
-<button bindtap='btn_test'>test</button>
- <button bindtap='btn_open' disabled='{{opened}}'>打开蓝牙</button> 
+<!-- <view>
+  <button bindtap='btn_test'>test</button>
+</view> -->
+<!-- <button bindtap='btn_open' disabled='{{opened}}'>打开蓝牙</button>
 <button bindtap='btn_discovering_bluetooth' disabled='{{!opened|discovering}}' loading='{{discovering}}'>搜索设备</button>
 <button bindtap='btn_stop' disabled='{{!opened|!discovering}}'>停止搜索</button>
- <button bindtap='btn_close' disabled='{{discovering|!opened}}'>关闭蓝牙</button>  
+<button bindtap='btn_close' disabled='{{discovering|!opened}}'>关闭蓝牙</button> -->
+<view style='margin: 10px auto;text-align: center;'>
+  <view>搜索设备<view class="weui-loading" hidden='{{!discovering}}'></view> </view>
+</view>
 <scroll-view style='width:100%;border-top:0.5px solid #C9C9C9;border-bottom:0.5px solid #c8c7cc' enable-back-to-top="true">
   <view wx:for="{{bluetoothList}}" data-bluetoothdevice='{{item}}' bindtap='bluetoothdevice_click' style='position:relative;left:5%;height:70px;border-top:0.5px solid #C9C9C9;'>
     <view style='position:relative;top:10px;'>
       <view>
-        <image src='../../images/icon.jpeg' lazy-load='true' style='width:50px;height:50px;'></image>
+        <image src='../../images/image_bluetooth.png' lazy-load='true' style='width:50px;height:50px;'></image>
+        <!-- <text style='width:50px;height:50px;' class="fa fa-bluetooth fa-3x" aria-hidden="true"></text>  -->
       </view>
       <div>
         <view style='position:absolute;left:60px;font-size:14px;top:0px;'>
