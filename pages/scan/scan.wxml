@@ -1,7 +1,7 @@
 <!--pages/scan/scan.wxml-->
-<!-- <view>
+ <!-- <view>
   <button bindtap='btn_test'>test</button>
-</view> -->
+</view>  -->
 <!-- <button bindtap='btn_open' disabled='{{opened}}'>打开蓝牙</button>
 <button bindtap='btn_discovering_bluetooth' disabled='{{!opened|discovering}}' loading='{{discovering}}'>搜索设备</button>
 <button bindtap='btn_stop' disabled='{{!opened|!discovering}}'>停止搜索</button>

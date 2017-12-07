@@ -95,8 +95,8 @@
       </view>
     </view>
   </view>
-  <button bindtap="btn_submit" class="weui-btn" type="primary">提交</button>
-  <button bindtap='btn_disconnect' disabled='{{!connecting}}'>断开连接</button>
+  <button bindtap="btn_submit" class="weui-btn" disabled="{{submitting}}"type="primary">提交</button>
+  <!-- <button bindtap='btn_disconnect' disabled='{{!connecting}}'>断开连接</button>  -->
 </view>
 
 <!-- <button bindtap='btn_connect' loading='{{connecting}}' disabled='{{connecting}}'>连接</button>

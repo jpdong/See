@@ -1,6 +1,5 @@
 {
   "pages": [
-    
     "pages/scan/scan",
     "pages/user/user",
     "pages/device/device",

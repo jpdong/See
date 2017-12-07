@@ -19,10 +19,13 @@ Page({
     name: "",
     phone: "",
     address: "",
-    longitude:"",
-    latitude:""
+    longitude: "",
+    latitude: "",
+    submitting: false,
+    deviceModeChange: false
   },
   btn_connect: function () {
+    console.log("connect " + this.data.connecting);
     if (!this.data.connecting) {
       wx.showLoading({
         title: '操作中',
@@ -38,11 +41,16 @@ Page({
         },
         fail: function (res) {
           wx.hideLoading();
-          util.toast("connect fail:" + JSON.stringify(res));
+          console.log("connect fail:" + JSON.stringify(res));
+          util.toast("连接失败");
         }
+      })
+      wx.onBLEConnectionStateChange(function (res) {
+        console.log("state:" + JSON.stringify(res));
       })
     } else {
       console.log("connect already connecting");
+      util.toast("已连接");
     }
   },
   btn_disconnect: function (event) {
@@ -68,6 +76,9 @@ Page({
   },
   btn_submit: function () {
     console.log("submit click");
+    pageInstance.setData({
+      submitting: true
+    })
     if (checkInput()) {
       wx.getLocation({
         type: 'wgs84',
@@ -81,35 +92,41 @@ Page({
         },
         fail: function (res) {
           //util.toast(JSON.stringify(res));
+          pageInstance.setData({
+            submitting: false
+          })
           wx.showModal({
             title: '权限限制',
             content: '请允许小程序获得地理位置信息',
-            confirmText:"设置",
-            success:function(res) {
+            confirmText: "设置",
+            success: function (res) {
               if (res.confirm) {
-                wx.openSetting({
-                  
-                })
+                wx.openSetting({});
               }
             },
-            fail:function(res) {
+            fail: function (res) {
               console.log(JSON.stringify(res));
             }
-            
+
           })
         }
       })
     } else {
+      pageInstance.setData({
+        submitting: false
+      })
       wx.showModal({
         title: '失败',
-        content: '缺少信息',
-        showCancel:false
+        content: '缺少必要信息',
+        showCancel: false
       })
     }
-    
+
   },
   onLoad: function (options) {
     pageInstance = this;
+    getApp().globalData.bluetoothPage = this;
+    console.log("bluetooth onLoad:" + JSON.stringify(this));
     httpclient = new HttpClient.HttpClient();
     mBluetoothdevice = JSON.parse(options.bluetoothdevice);
     this.setData({
@@ -148,7 +165,7 @@ function scanSN() {
       })
     }, fail: function (error) {
       console.log(JSON.stringify(error));
-      util.toast(JSON.stringify(error));
+      util.toast("无数据");
     }
   })
 }
@@ -166,7 +183,10 @@ function getDeviceServices(deviceId) {
     },
     fail: function (res) {
       wx.hideLoading();
-      util.toast("get service fail:" + JSON.stringify(res));
+      pageInstance.setData({
+        connecting: false
+      })
+      console.log("get service fail:" + JSON.stringify(res));
     }
   })
 }
@@ -184,36 +204,38 @@ function getCharacteristics(serviceId) {
     },
     fail: function (res) {
       wx.hideLoading();
-      util.toast("get characteristic fail:" + JSON.stringify(res));
+      pageInstance.setData({
+        connecting: false
+      })
+      console.log("get characteristic fail:" + JSON.stringify(res));
     }
   })
 }
 
 function disconnectBLE() {
   console.log("disconnect BLE:underSetting = " + pageInstance.data.underSetting);
-  if (pageInstance.data.underSetting) {
-    writeDataToC3("3");
-    pageInstance.data.underSetting = false;
-    pageInstance.setData({
-      connecting: false,
-      underSetting: false
-    })
-    return;
-  }
-  if (pageInstance.data.connecting) {
-    wx.closeBLEConnection({
-      deviceId: mBluetoothdevice.deviceId,
-      success: function (res) {
-        pageInstance.setData({
-          connecting: false
-        })
-        console.log("close connect success");
-      },
-      fail: function (res) {
-        console.log("close connect fail");
-      }
-    })
-  }
+  // if (pageInstance.data.underSetting && !pageInstance.data.deviceModeChange) {
+  //   writeDataToC3("3");
+  //   pageInstance.data.underSetting = false;
+  //   pageInstance.setData({
+  //     connecting: false,
+  //     underSetting: false
+  //   })
+  //   return;
+  // }
+  wx.closeBLEConnection({
+    deviceId: mBluetoothdevice.deviceId,
+    success: function (res) {
+      pageInstance.setData({
+        connecting: false,
+      })
+      console.log("close connect success");
+    },
+    fail: function (res) {
+      console.log("close connect fail");
+    }
+  })
+
 }
 
 function writeDataToC3(str) {
@@ -233,6 +255,7 @@ function writeDataToC3(str) {
     characteristicId: '0000EE03-0000-1000-8000-00805F9B34FB',
     value: arrayBuffer,
     success: function (res) {
+      pageInstance.data.deviceModeChange = true;
       console.log("write to 3 success");
       if (str == "1") {
         //pageInstance.data.underSetting = true;
@@ -241,12 +264,34 @@ function writeDataToC3(str) {
         })
         readDataFromC1();
       } else if (str == "2") {
-
+        wx.hideLoading();
+        wx.showModal({
+          title: '注册成功',
+          content: '注册成功',
+          showCancel:false,
+          success:function(res) {
+            if (res.confirm) {
+              wx.navigateBack({});
+            }
+          }
+        }); 
       }
     },
     fail: function (res) {
       wx.hideLoading();
       console.log("write to 3 fail:" + JSON.stringify(res));
+      if (str == "1") {
+        pageInstance.setData({
+          connecting: false
+        })
+        util.toast("连接失败");
+      } else if (str == "2") {
+        util.toast("切换模式失败");
+        pageInstance.setData({
+          submitting: false
+        })
+      }
+
     }
   })
 }
@@ -269,10 +314,16 @@ function writeDataToC2(str) {
     value: arrayBuffer,
     success: function (res) {
       console.log('write to C2 success', res.errMsg);
+      // //test
+      // wx.hideLoading();
       writeDataToC3("2");
     },
     fail: function (res) {
+      pageInstance.setData({
+        submitting: false
+      })
       console.log("write to C2 fail:" + JSON.stringify(res));
+      util.toast("写入序列号失败")
     }
   })
 }
@@ -340,7 +391,7 @@ function encryptData(data) {
     s = s.concat(length.toString(16));
   }
   s = s.concat(data);
-  for (let i = 0; i < s.length > 16 ? (32 - s.length):(16 - s.length); i++) {
+  for (let i = 0; i < s.length > 16 ? (32 - s.length) : (16 - s.length); i++) {
     s = s.concat("0");
   }
   console.log("before encrypt:" + s);
@@ -356,7 +407,7 @@ function registerDevice() {
   var pageData = pageInstance.data;
   var urlBuilder = new Request.Request()
     .setBaseUrl("https://api.eeseetech.com/")
-    .setData(JSON.stringify(new RegisterData(pageData.dataFromDevice, pageData.dataFromBarcode, pageData.name, pageData.address,pageData.phone, pageData.longitude,pageData.latitude)))
+    .setData(JSON.stringify(new RegisterData(pageData.dataFromDevice, pageData.dataFromBarcode, pageData.name, pageData.address, pageData.phone, pageData.longitude, pageData.latitude)))
     //.setData(JSON.stringify(new RegisterData("111111111111", "0220171100001", "dong", "上海","123456123456", "120","31")))
     .setService("Bluetooth.proregister")
     .setSite("router");
@@ -365,24 +416,27 @@ function registerDevice() {
   httpclient.request(url, function success(responseData) {
     if (responseData.code == 0) {
       writeDataToC2(pageInstance.data.dataFromBarcode);
-      wx.hideLoading();
-      wx.showToast({
-        title: '注册成功',
-        icon: "success",
-        duration: 1000
-      })
     } else {
       wx.hideLoading();
       wx.showModal({
         title: '注册失败',
         content: responseData.msg,
         showCancel: false,
+        success: function (res) {
+          if (res.confirm) {
+            disconnectBLE();
+            wx.navigateBack({});
+          }
+        }
       });
     }
   }, function fail(error) {
     console.log(error);
+    pageInstance.setData({
+      submitting: false
+    })
     wx.showModal({
-      title: '注册失败',
+      title: '请求失败',
       content: error,
       showCancel: false,
     });
@@ -398,19 +452,24 @@ function checkInput() {
 }
 
 function equalWithNull(data) {
-  return data=="";
+  return data == "";
+}
+
+function onAppHide() {
+  console.log("onAppHide");
+  disconnectBLE();
 }
 
 class RegisterData {
-  mac_address="";
-  sn="";
-  username="";
-  address="";
-  phone="";
-  longitude="";
-  latitude=""
+  mac_address = "";
+  sn = "";
+  username = "";
+  address = "";
+  phone = "";
+  longitude = "";
+  latitude = ""
 
-  constructor(mac,sn, name,address, phone,longitude, latitude) {
+  constructor(mac, sn, name, address, phone, longitude, latitude) {
     this.mac_address = mac;
     this.sn = sn;
     this.username = name;
@@ -420,3 +479,5 @@ class RegisterData {
     this.latitude = latitude;
   }
 }
+
+module.exports = { onAppHide: onAppHide }

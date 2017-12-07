@@ -149,7 +149,7 @@ function search() {
     .setData("{\"startno\":\"100\",\"counter\":\"100\"}")
     .setService("Router.Lists")
     .setSite("router");
-  var url = urlBuilder.buildUrl();
+  var url = urlBuilder.buildUrlWithSid();
   console.log(url);
   wx.showLoading({
     title: '加载中',
