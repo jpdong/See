@@ -1,0 +1,32 @@
+<!--pages/login/login.wxml-->
+<view class="weui-cells weui-cells_after-title">
+  <view class="weui-cell weui-cell_input">
+    <view class="weui-cell__hd">
+      <view class="weui-label">账号</view>
+    </view>
+    <view class="weui-cell__bd">
+      <input class="weui-input" bindblur='input_account' value="{{account}}"/>
+    </view>
+  </view>
+  <view class="weui-cell weui-cell_input weui-cell_vcode">
+    <view class="weui-cell__hd">
+      <view class="weui-label">密码</view>
+    </view>
+    <view class="weui-cell__bd">
+      <input class="weui-input" password='true' bindblur='input_password' value="{{passwordMd5}}"/>
+    </view>
+  </view>
+</view>
+<view class="weui-cells weui-cells_after-title">
+  <view class="weui-cell weui-cell_switch">
+    <view class="weui-cell__bd">记住密码</view>
+    <view class="weui-cell__ft">
+      <switch checked="{{rememberPassword}}" bindchange='switch_change'>
+      </switch>
+    </view>
+  </view>
+</view>
+
+<view class="weui-btn-area">
+  <button class="weui-btn" type="primary" bindtap="btn_login">确定</button>
+</view>

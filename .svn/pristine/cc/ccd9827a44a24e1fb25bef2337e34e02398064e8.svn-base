@@ -1,0 +1,36 @@
+<!-- <button bindtap='btn_search'>
+  search</button> -->
+<view class="weui-search-bar">
+  <view class="weui-search-bar__form">
+    <view class="weui-search-bar__box">
+      <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
+      <input type="text" class="weui-search-bar__input" placeholder="搜索" value="{{inputVal}}" focus="{{inputShowed}}" bindinput="inputTyping" bindblur='input_searchKey' />
+      <view class="weui-icon-clear" wx:if="{{inputVal.length > 0}}" bindtap="clearInput">
+        <icon type="clear" size="14"></icon>
+      </view>
+    </view>
+    <label class="weui-search-bar__label" hidden="{{inputShowed}}" bindtap="showInput">
+      <icon class="weui-icon-search" type="search" size="14"></icon>
+      <view class="weui-search-bar__text">搜索</view>
+    </label>
+  </view>
+  <view class="weui-search-bar__cancel-btn" hidden="{{!inputShowed}}" bindtap="hideInput">取消</view>
+  <view wx:if="{{!inputShowed}}" bindtap='camera_click' style='margin-left:5px;padding:5px'><text class='fa fa-camera fa-1x' style='color:#666'></text></view>
+</view>
+<scroll-view style='width:100%;border-top:0.5px solid #C9C9C9;border-bottom:0.5px solid #C9C9C9' enable-back-to-top="true">
+  <view wx:for="{{deviceList}}" data-item="{{item}}" bindtap='listItem_click' style='position:relative;left:5%;height:70px;border-top:0.5px solid #C9C9C9;'>
+    <view style='position:relative;top:10px;'>
+      <view>
+        <image src='../../images/icon.jpeg' lazy-load='true' style='width:50px;height:50px;'></image>
+      </view>
+      <div>
+        <view style='position:absolute;left:60px;font-size:14px;top:0px;'>
+          {{item.routename}}
+        </view>
+        <view style='position:absolute;left:60px;bottom:5px;font-size:12px;color:#666'>
+          {{item.mac_address}}
+        </view>
+      </div>
+    </view>
+  </view>
+</scroll-view>

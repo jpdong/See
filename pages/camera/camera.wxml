@@ -1,0 +1,9 @@
+<!--pages/camera.wxml-->
+<camera device-position="back" flash="off" binderror="error" style="width:100%;height:100px">
+</camera>
+<button type="primary" bindtap="takePhoto" style='margin:10px 20px'>拍照</button>
+<image mode="aspectFit" src="{{src}}" style="width:100%;height:100px;"></image>
+<button type="primary" bindtap="ocrClick" style='margin:10px 20px'>识别</button>
+<view>{{carlicense}}</view>
+<button type="primary" bindtap="searchClick" style='margin:10px 20px'>搜索</button>
+<button bindtap='testClick'>test</button>

@@ -1,0 +1,23 @@
+<!--pages/device_detail/detail.wxml-->
+<!-- <scroll-view>
+  <view class="weui-cells weui-cells_after-title" wx:for="{{detailList}}">
+    <view class="weui-cell" data-item="{{item}}">
+      <view class='weui-cell__bd'>
+        {{item.key}}
+      </view>
+      <view class='weui-cell__ft'>
+        {{item.value}}
+      </view>
+    </view>
+  </view>
+</scroll-view> -->
+<view class="weui-cells weui-cells_after-title">
+  <view class="weui-cell"><view class='weui-cell__bd'>编号</view><view class='weui-cell__ft'>{{item.id}}</view></view>
+  <view class="weui-cell"><view class='weui-cell__bd'>设备名称</view><view class='weui-cell__ft'>{{item.routename}}</view></view>
+  <view class="weui-cell"><view class='weui-cell__bd'>IP地址</view><view class='weui-cell__ft'>{{item.gw_address}}</view></view>
+  <view class="weui-cell"><view class='weui-cell__bd'>网关MAC</view><view class='weui-cell__ft'>{{item.mac_address}}</view></view>
+  <view class="weui-cell"><view class='weui-cell__bd'>SW版本</view><view class='weui-cell__ft'>{{item.softver}}</view></view>
+  <view class="weui-cell"><view class='weui-cell__bd'>运行状态</view><view class='weui-cell__ft'>{{item.update_time}}</view></view>
+  <view class="weui-cell"><view class='weui-cell__bd'>设备型号</view><view class='weui-cell__ft'>{{item.devicetype}}</view></view>
+  <view class="weui-cell"><view class='weui-cell__bd'>在线状态</view><view class='weui-cell__ft'>{{item.state}}</view></view>
+</view>

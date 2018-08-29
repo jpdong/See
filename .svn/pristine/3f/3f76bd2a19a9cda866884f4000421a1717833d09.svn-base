@@ -1,0 +1,9 @@
+<!--pages/user/user.wxml-->
+ <view wx:if="{{isLogin}}">
+  <view>{{user_name}}</view>
+  <button class="weui-btn" type="warn">退出</button>
+</view>
+<view wx:else>
+  <view>未登录</view>
+  <button class="weui-btn" type="primary" bindtap='btn_toLogin'>去登录</button>
+</view> 

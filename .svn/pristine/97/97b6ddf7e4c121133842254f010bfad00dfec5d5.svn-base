@@ -1,0 +1,8 @@
+/* pages/test.wxss */
+
+@import "../variable/color.wxss";
+@import "../variable/weui.wxss";
+
+.listItem{
+  /* flex-direction: row; */
+}

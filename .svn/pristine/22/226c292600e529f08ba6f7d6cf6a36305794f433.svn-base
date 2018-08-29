@@ -1,0 +1,51 @@
+{
+	"description": "项目配置文件。",
+	"setting": {
+		"urlCheck": true,
+		"es6": true,
+		"postcss": true,
+		"minified": true,
+		"newFeature": true
+	},
+	"compileType": "miniprogram",
+	"libVersion": "1.6.4",
+	"appid": "wxa6faa75ed309d4dd",
+	"projectname": "HelloWorld",
+	"svr": "",
+	"client": "",
+	"qcloudRoot": "",
+	"miniprogramRoot": "",
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": -1,
+			"list": [
+				{
+					"id": -1,
+					"name": "1",
+					"pathName": "pages/bluetooth_device/bluetoothdevice",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "2",
+					"pathName": "pages/bluetooth_device/bluetoothdevice",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "camera",
+					"pathName": "pages/camera/camera",
+					"query": ""
+				}
+			]
+		}
+	}
+}

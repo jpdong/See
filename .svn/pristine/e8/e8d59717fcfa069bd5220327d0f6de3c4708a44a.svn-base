@@ -1,0 +1,40 @@
+{
+  "pages": [
+    "pages/scan/scan",
+    "pages/user/user",
+    "pages/device/device",
+    "pages/device_detail/detail",
+    "pages/login/login",
+    "pages/bluetooth_device/bluetoothdevice"
+    
+  ],
+  "window": {
+    "backgroundTextStyle": "black",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "See",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "backgroundColor": "#fff",
+    "list": [
+      {
+        "pagePath": "pages/device/device",
+        "iconPath": "images/search.png",
+        "selectedIconPath": "images/search_selected.png",
+        "text": "搜索"
+      },
+      {
+        "pagePath": "pages/scan/scan",
+        "iconPath": "images/bluetooth.png",
+        "selectedIconPath": "images/bluetooth_selected.png",
+        "text": "扫描"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "iconPath":"images/me.png",
+        "selectedIconPath":"images/me_selected.png",
+        "text":"我"
+      }
+    ]
+  }
+}
